@@ -348,8 +348,7 @@ CATEGORIES = {
         "📜-rules",
         "🤖-bot-commands",
         "🎉-welcome",
-        "📢-announcements",
-        "🔊 Announcements Voice"
+        "📢-announcements"
     ],
     
     "🎓 Academic Discussions": [
@@ -358,12 +357,7 @@ CATEGORIES = {
         "🎭-philosophy-studies",
         "📚-literature-studies",
         "🗣️-political-science",
-        "🧠-sociology-studies",
-        "🔊 Academic Voice Hall",
-        "🔊 Study Room (8 users)",
-        "🔊 Duo Study Room (2 users)",
-        "🔊 Squad Study Room (4 users)",
-        "🔊 Team Study Room (6 users)"
+        "🧠-sociology-studies"
     ],
 
     "🛡️ Cybersecurity": [
@@ -371,11 +365,7 @@ CATEGORIES = {
         "🎯-ctf-events",
         "💡-tips",
         "🔧-tools",
-        "📚-resources",
-        "🔊 CTF Voice (8 users)",
-        "🔊 Team Alpha (8 users)",
-        "🔊 Team Beta (8 users)",
-        "🔊 Team Gamma (8 users)"
+        "📚-resources"
     ],
     
     "📚 Education Areas": [
@@ -383,9 +373,7 @@ CATEGORIES = {
         "🎓-intermediate-level",
         "🎯-advanced-level",
         "📝-study-notes",
-        "📹-video-lessons",
-        "🔊 Training Room (8 users)",
-        "🔊 Mentor Room (8 users)"
+        "📹-video-lessons"
     ],
     
     "🎯 Practice Areas": [
@@ -393,9 +381,7 @@ CATEGORIES = {
         "🎯-hackthebox",
         "🌐-tryhackme",
         "🛡️-portswigger",
-        "💻-hack-the-games",
-        "🔊 Practice Voice (8 users)",
-        "🔊 Team Practice (8 users)"
+        "💻-hack-the-games"
     ],
     
     "🔒 Security Areas": [
@@ -405,10 +391,7 @@ CATEGORIES = {
         "🔐-cryptography",
         "🕵️-osint",
         "🌍-network-security",
-        "☁️-cloud-security",
-        "🔊 Security Meeting (8 users)",
-        "🔊 Red Team (8 users)",
-        "🔊 Blue Team (8 users)"
+        "☁️-cloud-security"
     ],
     
     "💻 Laboratory": [
@@ -416,9 +399,7 @@ CATEGORIES = {
         "🔬-malware-analysis",
         "🛠️-tool-development",
         "📝-notes",
-        "🧪-lab-environment",
-        "🔊 Lab Voice (8 users)",
-        "🔊 Research Room (8 users)"
+        "🧪-lab-environment"
     ],
     
     "🛠️ Tools and Resources": [
@@ -426,9 +407,7 @@ CATEGORIES = {
         "📚-document-archive",
         "🔗-useful-links",
         "💡-script-sharing",
-        "📖-cheatsheets",
-        "🔊 Tool Workshop (8 users)",
-        "🔊 Development Room (8 users)"
+        "📖-cheatsheets"
     ],
     
     "🤝 Community": [
@@ -437,21 +416,48 @@ CATEGORIES = {
         "🤝-help",
         "🎉-achievements",
         "📣-announcements",
-        "🎪-events",
-        "🔊 Public Lounge (8 users)",
-        "🔊 Community Chat (8 users)",
-        "🔊 Gaming Voice (8 users)",
-        "🔊 Music Room (8 users)"
+        "🎪-events"
     ],
     
     "🛡️ Security": [
         "🔒-security-logs",
         "⚠️-alerts",
         "🛡️-audit-logs",
-        "🚫-banned-users",
-        "🔊 Admin Voice (8 users)",
-        "🔊 Mod Voice (8 users)",
-        "🔊 Emergency Meeting (8 users)"
+        "🚫-banned-users"
+    ]
+}
+
+# Voice channel configurations
+VOICE_CHANNELS = {
+    "🎓 Academic Voice": [
+        {"name": "🔊 Study Room", "limit": 8},
+        {"name": "🔊 Duo Study Room", "limit": 2},
+        {"name": "🔊 Squad Study Room", "limit": 4},
+        {"name": "🔊 Team Study Room", "limit": 6}
+    ],
+    "🛡️ Cybersecurity Voice": [
+        {"name": "🔊 CTF Voice", "limit": 8},
+        {"name": "🔊 Team Alpha", "limit": 8},
+        {"name": "🔊 Team Beta", "limit": 8},
+        {"name": "🔊 Team Gamma", "limit": 8}
+    ],
+    "📚 Education Voice": [
+        {"name": "🔊 Training Room", "limit": 8},
+        {"name": "🔊 Mentor Room", "limit": 8}
+    ],
+    "🎯 Practice Voice": [
+        {"name": "🔊 Practice Voice", "limit": 8},
+        {"name": "🔊 Team Practice", "limit": 8}
+    ],
+    "🤝 Community Voice": [
+        {"name": "🔊 Public Lounge", "limit": 8},
+        {"name": "🔊 Gaming Voice", "limit": 8},
+        {"name": "🔊 Music Room", "limit": 8}
+    ],
+    "🛡️ Staff Voice": [
+        {"name": "🔊 Admin Voice", "limit": 8},
+        {"name": "🔊 Mod Voice", "limit": 8},
+        {"name": "🔊 Emergency Meeting", "limit": 8}
     ]
 }
 
@@ -872,7 +878,7 @@ async def setup_server(guild):
     for category_name, channels in CATEGORIES.items():
         category = await guild.create_category(category_name)
         
-        # Create channels for each category
+        # Create text channels for each category
         for channel_name in channels:
             channel = await guild.create_text_channel(channel_name, category=category)
             
@@ -906,6 +912,19 @@ async def setup_server(guild):
                     await channel.send(f"**[{lang_code.upper()}]**")
                     await channel.send(commands_help)
                     await channel.send("─" * 40)  # Separator
+
+    # Create voice channels
+    for category_name, voice_channels in VOICE_CHANNELS.items():
+        # Create voice category
+        category = await guild.create_category(category_name)
+        
+        # Create voice channels in category
+        for vc in voice_channels:
+            await guild.create_voice_channel(
+                name=vc["name"],
+                category=category,
+                user_limit=vc["limit"]
+            )
 
     # Create roles
     for role_info in ROLES:
